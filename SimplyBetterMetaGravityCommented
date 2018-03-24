@@ -1,0 +1,113 @@
+import numpy
+import sys
+
+def gravity(factor, tick):
+    #This code models the particles' behavior when they are put at
+    #"factor" distance apart, and the program is allowed to run for
+    #"tick" number of ticks. Keep in mind tick /= internal time!
+    x = 0
+    y = factor
+    t = 0
+    #Each entry in the following list represents a unit of internal time,
+    #and the distance between the particles during the unit of time.
+    #I could have made seperate jump histories for particle x and
+    #particle y, but they are so similiar I don't see the need.
+    jump_history = []
+    #The following two lists keep track of the positions of the
+    #information packets sent between the two particles. their inital values
+    #are to prevent the need to run the program for "factor" number of ticks
+    #before the particles can start communicating!
+    informationx = [factor-x for x in range(factor)]
+    informationy = [y for y in range(factor)]
+    #The following list takes record of the distance between the particles
+    #at the beginning of every tick. It represents distance over external time,
+    #which should always average to around "factor." A good test for the
+    #noise in the system.
+    distance_history = []
+    while t < tick:
+        informationx.append(x) #creates a new information packet from particle x
+        informationy.append(y) #same but from particle y
+        distance = abs(x - y)
+        distance_history.append(distance)
+        for element in list(informationx):
+            #Checks if an information packet from particle x has reached particle y
+            if y <= element:
+                movey = numpy.random.randint(1,3) #The coinflip!
+                jump_history.append(abs(x-y))
+                informationx.remove(element) #destroys used information packets
+                if movey == 1:
+                    y += 1
+                else:
+                    y -= 1
+            else:
+                pass
+
+        for element in list(informationy):
+            #Same as above but for particle x, from y
+            if x >= element:
+                movex = numpy.random.randint(1,3)
+                jump_history.append(abs(x-y))
+                if movex == 1:
+                    x -= 1
+                    informationy.remove(element)
+                else:
+                    x += 1
+                    informationy.remove(element)
+            else:
+                pass
+
+        #These two following entries each move the information packets
+        #one step towards the opposing particle.
+        informationx[:] = [a + 1 for a in informationx] 
+        informationy[:] = [b - 1 for b in informationy]
+        t += 1
+        if x >= y:
+        #in case x and y cross, which screws up the data.
+            print("Error! Error! Abort! Abort!")
+            print("x equals " + str(x) + " !")
+            print("y equals " + str(y) + " !")
+            sys.exit("Danger, danger Will Robinson!")
+            break
+        else:
+            pass
+    return [distance_history, jump_history] #the important lists!
+
+
+def Gravity_Average(iterations, factor, tick):
+    #This code takes the results of Gravity given the arguments "factor" and "tick" and averages the results for "iterations" number of iterations.
+    distance_history_sum = 0
+    distance_history_length = 0
+    jump_history_sum = 0
+    jump_history_length = 0
+    distance_final_sum = 0
+    jump_final_sum = 0
+    timer = 0 
+    for _ in range(iterations):
+        result = gravity(factor, tick)
+        distance_history_sum += sum(result[0])
+        distance_history_length += len(result[0])
+        jump_history_sum += sum(result[1])
+        jump_history_length += len(result[1])
+        distance_final_sum += result[0][-1]
+        jump_final_sum += result[1][-1] #Note that the number of entries in jump history varies, so the index of the final jump is different from iteration to iteration.
+        timer += 1
+        print(timer) #For keeping track of how the program is running.
+
+    distance_average =  distance_history_sum / distance_history_length
+    jump_history_average = jump_history_sum / jump_history_length
+    distance_final_average = distance_final_sum/iterations
+    jump_final_average = jump_final_sum/iterations
+
+    print(distance_average)
+    print(jump_history_average)
+    print(distance_history_sum)
+    print(distance_final_average)
+    print(jump_final_average)
+
+#Call to function. 10000 is a good iterator. for results that don't take forever,
+#I suggest the "factor" be 100. Im currently collecting data at factor 1000, which
+#should give great results but takes a long time. Watch how the jump history
+#average decreases very slightly as "tick" increases! (at a factor of 100,
+#I suggest not going over a tick of 200.)
+Gravity_Average(10000, 100, 200) 
+
