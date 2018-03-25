@@ -78,7 +78,7 @@ def gravity(initialDistance, simLength):
                     if locy >= element:
                         ynegRestart = 1
                         movey = numpy.random.randint(1,3)
-                        jump_history.append(abs(x-y))
+                        jump_history.append(abs(locx-locy))
                         informationxneg.remove(element)
                         if movey == 1:
                             locy += 1
@@ -91,7 +91,7 @@ def gravity(initialDistance, simLength):
                     if locx <= element:
                         yposRestart = 1
                         movex = numpy.random.randint(1,3)
-                        jump_history.append(abs(x-y))
+                        jump_history.append(abs(locx-locy))
                         informationypos.remove(element)
                         if movex == 1:
                             locx -= 1   
