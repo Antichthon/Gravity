@@ -18,9 +18,9 @@ def gravity(initialDistance, simLength):
     #information packets sent between the two particles. their inital values
     #are to prevent the need to run the program for "initialDistance" number of ticks
     #before the particles can start communicating.
-    informationxpos = [initialDistance - _ for _ in range(initialDistance)]
+    informationxpos = [initialDistance - packetx for packetx in range(initialDistance)]
     informationxneg = [_ for _ in range(initialDistance)]
-    informationypos = [initialDistance - _ for _ in range(initialDistance)]
+    informationypos = [initialDistance - packety for packety in range(initialDistance)]
     informationyneg = [_ for _ in range(initialDistance)]
     #The following list takes record of the distance between the particles
     #at the beginning of every tick. It represents distance over external time,
